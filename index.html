@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gemini AI Chatbot</title>
+  <style>
+    body {background: #0d1117; color: white; font-family: "Poppins", sans-serif;
+      display: flex; flex-direction: column; align-items: center; height: 100vh; margin: 0;}
+    h1 {margin-top: 20px; color: #00ffcc;}
+    #chatbox {width: 90%; max-width: 600px; height: 70vh; background: #161b22;
+      border-radius: 15px; padding: 15px; overflow-y: auto; margin-bottom: 15px;}
+    .msg {margin: 10px 0; padding: 10px; border-radius: 10px; max-width: 80%; word-wrap: break-word;}
+    .user {background: #238636; align-self: flex-end; text-align: right;}
+    .bot {background: #30363d; align-self: flex-start; text-align: left;}
+    #input-area {display: flex; width: 90%; max-width: 600px;}
+    input {flex: 1; padding: 10px; border-radius: 10px 0 0 10px; border: none; outline: none;}
+    button {background: #00ffcc; color: black; border: none; padding: 10px 20px;
+      border-radius: 0 10px 10px 0; cursor: pointer; font-weight: bold;}
+    button:hover {background: #00cc99;}
+  </style>
+</head>
+<body>
+  <h1>🤖 Gemini AI Chatbot</h1>
+  <div id="chatbox"></div>
+  <div id="input-area">
+    <input type="text" id="userInput" placeholder="Type your message..." />
+    <button onclick="sendMessage()">Send</button>
+  </div>
+  <script>
+    async function sendMessage() {
+      const input = document.getElementById("userInput");
+      const message = input.value.trim();
+      if (message === "") return;
+      appendMessage("user", message);
+      input.value = "";
+      const res = await fetch("/send", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message }),
+      });
+      const data = await res.json();
+      appendMessage("bot", data.reply);
+    }
+    function appendMessage(sender, text) {
+      const chatbox = document.getElementById("chatbox");
+      const msg = document.createElement("div");
+      msg.classList.add("msg", sender);
+      msg.textContent = text;
+      chatbox.appendChild(msg);
+      chatbox.scrollTop = chatbox.scrollHeight;
+    }
+  </script>
+</body>
+</html>
